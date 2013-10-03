@@ -1,0 +1,42 @@
+extends layout
+
+block content
+  style
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+    
+    .x.axis path {
+      display: none;
+    }
+    
+    .line {
+      fill: none;
+      stroke: steelblue;
+      stroke-width: 1.5px;
+    }
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+    
+    .area {
+      fill: steelblue;
+    }
+  .container.container-fluid
+    .span5.offset-3
+      h1 hello world
+
+    .row
+      #canvas
+  
+  
+  script(src="http://d3js.org/d3.v3.min.js")
+  :coffeescript
+    @a = @a || {}
+
