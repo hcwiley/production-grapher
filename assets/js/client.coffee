@@ -14,7 +14,7 @@ getGraph = ->
     top: 20
     right: 20
     bottom: 300
-    left: 50
+    left: 70
   
   width = 960 - margin.left - margin.right
   height = 800 - margin.top - margin.bottom
@@ -35,15 +35,19 @@ getGraph = ->
 
   min = (d) ->
     d3.min Object.keys(d), (v) ->
-      val = parseInt d[v].replace(",","")
-      if val > 100
-        return val
-      else
+      if d[v]
+        val = parseInt d[v].replace(",","")
+        if val > 100
+          return val
+        else
         return 1000000
   max = (d) ->
     d3.max Object.keys(d), (v) ->
-      val = parseInt d[v].replace(",","")
-      val
+      if d[v]
+        val = parseInt d[v].replace(",","")
+        val
+      else
+        return -100000
   area = d3.svg.area()
     .interpolate("basis")
     .x( (d) ->
@@ -124,21 +128,6 @@ getGraph = ->
       .attr("fill", "#00f")
       .attr("d", area)
     
-    svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call xAxis
-
-    svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-      .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text units
-
     well = svg.selectAll(".well")
       .data(wells)
       .enter()
@@ -158,16 +147,31 @@ getGraph = ->
       name: d.name
       index: d.index
       ).attr("transform", (d) ->
-        "translate(" + parseInt( margin.left + ( d.index % 5 ) * 100 ) +
+        "translate(" + parseInt( 20 + ( d.index % 4 ) * 210 ) +
         "," +
-        parseInt(height + 40 + ( Math.floor( d.index / 5 ) ) * 20 ) +
+        parseInt(height + 40 + ( Math.floor( d.index / 4 ) ) * 20 ) +
         ")"
       ).attr("x", 3).attr("dy", ".35em").text (d) ->
-        d.name
+        d.name.substr(0,20)
       .style("fill", (d) ->
         color d.name
       )
     
+    svg.append("g")
+      .attr("class", "x axis path")
+      .attr("transform", "translate(0," + height + ")")
+      .call xAxis
+
+    svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text units
+
 
 $(window).ready ->
   # set up the socket.io and OSC

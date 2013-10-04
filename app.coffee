@@ -84,6 +84,13 @@ app.get "/", (req, res) ->
   res.render "index.jade",
     title: "Production Grapher"
 
+
+app.post "/", (req, res) ->
+  if req.files && req.files.csv.size > 0
+    fs.readFile req.files.csv.path, (err, data) ->
+      fs.writeFile 'data.csv', data, (err) ->
+        res.redirect('/')
+    
 app.get "/data.csv", (req, res) ->
   fs.readFile 'data.csv', (err, data)->
     return res.send(data)

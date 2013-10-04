@@ -9,10 +9,6 @@ block content
       shape-rendering: crispEdges;
     }
     
-    .x.axis path {
-      display: none;
-    }
-    
     .line {
       fill: none;
       stroke: steelblue;
@@ -30,10 +26,16 @@ block content
     }
   .container.container-fluid
     .span5.offset-3
-      h1 hello world
+      h1 production grapher
 
     .row
       #canvas
+
+    .row
+      form(action='/', method='post', enctype='multipart/form-data')
+        label New CSV
+        input#new-csv(name='csv', type='file')
+        button#csv-submit.btn.btn-primary Submit
   
   
   script(src="http://d3js.org/d3.v3.min.js")
