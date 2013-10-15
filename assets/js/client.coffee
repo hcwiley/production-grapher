@@ -28,10 +28,10 @@ getGraph = ->
     line = d3.svg.line()
       .interpolate("basis")
       .x((d) ->
-        #if typeof(d.month) == "number"
+        if d.val > 0
           x d.month
       ).y((d) ->
-        #if typeof(d.val) == "number"
+        if d.val > 0
           y d.val
       )
 
