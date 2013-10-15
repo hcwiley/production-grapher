@@ -28,10 +28,10 @@ getGraph = ->
     line = d3.svg.line()
       .interpolate("basis")
       .x((d) ->
-        if d.val > 0
+        #if d.val && d.val > 0
           x d.month
       ).y((d) ->
-        if d.val > 0
+        #if d.val && d.val > 0
           y d.val
       )
 
@@ -58,6 +58,7 @@ getGraph = ->
           val
         else
           return -100000
+
     area = d3.svg.area()
       .interpolate("basis")
       .x( (d) ->
@@ -66,6 +67,15 @@ getGraph = ->
         y(min(d))
       ).y1( (d) ->
         y(max(d))
+      )
+
+    average = d3.svg.line()
+      .interpolate("basis")
+      .x((d) ->
+        x d.index
+      ).y((d) ->
+        d3.mean d.values, (b)->
+          b.val
       )
 
     if $("#canvas").children().length > 0
@@ -143,6 +153,13 @@ getGraph = ->
         .attr("class", "area")
         .attr("fill", $(".area").css("fill"))
         .attr("d", area)
+
+      svg.append("path")
+        .datum(wells)
+        .attr("class", "line")
+        .attr("id", "average")
+        .attr("fill", "#f00")
+        .attr("d", average)
       
       well = svg.selectAll(".well")
         .data(wells)
@@ -231,11 +248,14 @@ $(window).ready ->
     $('#data-set').trigger 'change'
 
   $("#data-set").change ->
-    console.log $(@).val()
+    #console.log $(@).val()
+    $("#download-csv").attr "href","/csv/#{$('#data-set').val()}"
     getGraph()
     true
 
   $("#delete-csv").click ->
     socket.emit "delete", $("#data-set").val()
+
+  $("#download-csv").attr "href","/csv/#{$('#data-set').val()}"
 
   getGraph()

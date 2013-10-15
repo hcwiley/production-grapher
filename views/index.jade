@@ -42,6 +42,8 @@ block content
       #canvas
 
     .row
+      br
+    .row
       .span4
         label select data set
         select#data-set(name='csv')
@@ -49,9 +51,12 @@ block content
             option(name="#{file}") #{file}
         br
         button#delete-csv.btn.btn-danger Delete CSV
-      .span5
+      .span2
+        a#download-csv(href="#", target="_blank")
+          button.btn.btn-success Download CSV
+      .span3.offset1
         form(action='/', method='post', enctype='multipart/form-data')
-          label New CSV
+          h5 New CSV
           input#new-csv(name='csv', type='file')
           button#csv-submit.btn.btn-primary Submit
   
