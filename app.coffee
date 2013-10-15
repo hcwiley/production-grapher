@@ -78,21 +78,35 @@ io.sockets.on "connection",  (socket) ->
   socket.on "disconnect", ->
     console.log "disconnected"
 
+  socket.on "delete", (name)->
+    fs.unlink "./csvs/#{name}", (err) ->
+      if err
+        console.log "err deleting: #{err}"
+      else
+        socket.emit "deleted", name
+
+
 #
 # UI routes
 app.get "/", (req, res) ->
-  res.render "index.jade",
-    title: "Production Grapher"
+  fs.readdir './csvs/', (err, files)->
+    res.render "index.jade",
+      title: "Production Grapher"
+      csvs: files
 
 
 app.post "/", (req, res) ->
   if req.files && req.files.csv.size > 0
     fs.readFile req.files.csv.path, (err, data) ->
-      fs.writeFile 'data.csv', data, (err) ->
+      fs.writeFile "./csvs/#{req.files.csv.name}", data, (err) ->
         res.redirect('/')
     
 app.get "/data.csv", (req, res) ->
-  fs.readFile 'data.csv', (err, data)->
+  fs.readFile './csvs/data.csv', (err, data)->
+    return res.send(data)
+
+app.get "/csv/:name", (req, res) ->
+  fs.readFile "./csvs/#{req.params.name}", (err, data)->
     return res.send(data)
 
 

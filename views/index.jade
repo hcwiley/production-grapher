@@ -22,7 +22,7 @@ block content
     }
     
     .area {
-      fill: steelblue;
+      fill: rgba(100,100,205, .5);
     }
   .container.container-fluid
     .span5.offset-3
@@ -32,10 +32,18 @@ block content
       #canvas
 
     .row
-      form(action='/', method='post', enctype='multipart/form-data')
-        label New CSV
-        input#new-csv(name='csv', type='file')
-        button#csv-submit.btn.btn-primary Submit
+      .span4
+        label select data set
+        select#data-set(name='csv')
+          for file in csvs
+            option(name="#{file}") #{file}
+        br
+        button#delete-csv.btn.btn-danger Delete CSV
+      .span5
+        form(action='/', method='post', enctype='multipart/form-data')
+          label New CSV
+          input#new-csv(name='csv', type='file')
+          button#csv-submit.btn.btn-primary Submit
   
   
   script(src="http://d3js.org/d3.v3.min.js")
