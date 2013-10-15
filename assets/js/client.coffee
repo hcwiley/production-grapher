@@ -12,11 +12,11 @@ getGraph = ->
     margin =
       top: 20
       right: 20
-      bottom: 150
+      bottom: 30
       left: 70
     
     width = 960 - margin.left - margin.right
-    height = 550 - margin.top - margin.bottom
+    height = 500 - margin.top - margin.bottom
     x = d3.scale.linear().range([0, width])
     y = d3.scale.linear().range([height, 0])
     xAxis = d3.svg.axis().scale(x).orient("bottom")
@@ -35,14 +35,22 @@ getGraph = ->
     min = (d) ->
       d3.min Object.keys(d), (v) ->
         if d[v]
+          slug = v.replace(" ", "-")
+          if $("##{slug}-toggle input").length > 0
+            if !$("##{slug}-toggle input")[0].checked
+              return 100000
           val = parseInt d[v].replace(",","")
           if val > 50
             return val
           else
-          return 1000000
+            return 1000000
     max = (d) ->
       d3.max Object.keys(d), (v) ->
         if d[v]
+          slug = v.replace(" ", "-")
+          if $("##{slug}-toggle input").length > 0
+            if !$("##{slug}-toggle input")[0].checked
+              return -100000
           val = parseInt d[v].replace(",","")
           val
         else
@@ -141,6 +149,9 @@ getGraph = ->
 
       well.append("path")
         .attr("class", "line")
+        .attr('id', (d) ->
+          d.name.replace(' ','-')
+        )
         .attr("d", (d) ->
           line d.values
         )
@@ -148,20 +159,29 @@ getGraph = ->
           color d.name
         )
 
-      well.append("text").datum((d) ->
-        name: d.name
-        index: d.index
-        ).attr("transform", (d) ->
-          "translate(" + parseInt( 20 + ( d.index % 4 ) * 210 ) +
-          "," +
-          parseInt(height + 40 + ( Math.floor( d.index / 4 ) ) * 20 ) +
-          ")"
-        ).attr("x", 3).attr("dy", ".35em").text (d) ->
-          d.name.substr(0,20)
-        .style("fill", (d) ->
-          color d.name
-        )
-      
+      for el in wells
+        slug = el.name.replace(' ','-')
+        html = "<div id='#{slug}-toggle' class='span2 well-toggle'>"
+        html += "<input class='inline' type='checkbox' name='#{slug}' checked/>"
+        color = $("##{slug}").css("stroke")
+        html += "<label class='inline' style='margin-left: 5px; color:#{color};'>#{el.name}</label>"
+        html += "</div>"
+        $("#canvas").append(html)
+        $("##{slug}-toggle").click (el) ->
+          line = $("#"+$(@).attr('id').replace("-toggle",""))
+          if el.target.tagName == 'LABEL'
+            @.children[0].checked = !@.children[0].checked
+          if @.children[0].checked
+            line.show(400)
+          else
+            line.hide(400)
+          $(".area").remove()
+          svg.append("path")
+            .datum(data)
+            .attr("class", "area")
+            .attr("fill", $(".area").css("fill"))
+            .attr("d", area)
+
       svg.append("g")
         .attr("class", "x axis path")
         .attr("transform", "translate(0," + height + ")")
