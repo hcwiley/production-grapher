@@ -7,6 +7,9 @@
 
 @a = @a || {}
 
+slugify = (value) ->
+  value.toLowerCase().replace(/-+/g, "").replace(/\s+/g, "-").replace /[^a-z0-9-]/g, ""
+
 getGraph = ->
   try
     margin =
@@ -35,7 +38,7 @@ getGraph = ->
     min = (d) ->
       d3.min Object.keys(d), (v) ->
         if d[v]
-          slug = v.replace(" ", "-")
+          slug = slugify v
           if $("##{slug}-toggle input").length > 0
             if !$("##{slug}-toggle input")[0].checked
               return 100000
@@ -47,7 +50,7 @@ getGraph = ->
     max = (d) ->
       d3.max Object.keys(d), (v) ->
         if d[v]
-          slug = v.replace(" ", "-")
+          slug = slugify v
           if $("##{slug}-toggle input").length > 0
             if !$("##{slug}-toggle input")[0].checked
               return -100000
@@ -150,7 +153,7 @@ getGraph = ->
       well.append("path")
         .attr("class", "line")
         .attr('id', (d) ->
-          d.name.replace(' ','-')
+          slugify d.name
         )
         .attr("d", (d) ->
           line d.values
@@ -160,11 +163,15 @@ getGraph = ->
         )
 
       for el in wells
-        slug = el.name.replace(' ','-')
-        html = "<div id='#{slug}-toggle' class='span2 well-toggle'>"
+        slug = slugify el.name
+        html = "<div title='#{el.name}' id='#{slug}-toggle' class='span2 well-toggle'>"
         html += "<input class='inline' type='checkbox' name='#{slug}' checked/>"
         color = $("##{slug}").css("stroke")
-        html += "<label class='inline' style='margin-left: 5px; color:#{color};'>#{el.name}</label>"
+        name = el.name
+        max_len = 12
+        if name.length > max_len
+          name = name.substring(0,max_len) + "..."
+        html += "<label class='inline' style='margin-left: 5px; color:#{color};'>#{name}</label>"
         html += "</div>"
         $("#canvas").append(html)
         $("##{slug}-toggle").click (el) ->
